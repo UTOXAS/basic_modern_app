@@ -1,4 +1,4 @@
-platform :ios, '13.0'
+platform :ios, '15.0' # MODIFIED: was 13.0 (Flutter requires 15.0)
 
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -34,7 +34,6 @@ target 'Runner' do
     inherit! :search_paths
   end
 
-  # ADDED: Patrol UI test target (created by add_patrol_ui_tests.rb)
   target 'RunnerUITests' do
     inherit! :complete
   end

@@ -1,4 +1,3 @@
-# ADDED: idempotent - creates the RunnerUITests UI-test target and adds it to the Runner scheme
 require 'xcodeproj'
 
 project_path = File.expand_path('Runner.xcodeproj', __dir__)
@@ -12,24 +11,20 @@ end
 
 runner = project.targets.find { |t| t.name == 'Runner' }
 
-# ADDED: UI testing bundle (Objective-C) depending on Runner
-target = project.new_target(:ui_test_bundle, name, :ios, '13.0', nil, :objc)
+target = project.new_target(:ui_test_bundle, name, :ios, '15.0', nil, :objc) # MODIFIED: was '13.0'
 target.add_dependency(runner)
 
-# ADDED: source file
 group = project.main_group.new_group(name, name)
 target.add_file_references([group.new_file('RunnerUITests.m')])
 
-# ADDED: build settings
 target.build_configurations.each do |config|
   config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'com.example.basicModernApp.RunnerUITests'
   config.build_settings['TEST_TARGET_NAME'] = 'Runner'
   config.build_settings['GENERATE_INFOPLIST_FILE'] = 'YES'
-  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0' # MODIFIED: was '13.0'
 end
 project.save
 
-# ADDED: include the target in the shared Runner scheme's Test action
 scheme_path = Xcodeproj::XCScheme.shared_data_dir(project_path) + 'Runner.xcscheme'
 scheme = Xcodeproj::XCScheme.new(scheme_path)
 scheme.add_test_target(target)
