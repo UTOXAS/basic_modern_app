@@ -6,12 +6,10 @@ import 'package:patrol/patrol.dart';
 void main() {
   patrolTest(
     'full user journey – fast human speed',
-    // ADDED: real-time frames so the test is watchable
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
     ($) async {
       // Launch app
       await $.pumpWidgetAndSettle(const MyApp());
-      // ADDED: fast human-speed pause (clearly visible, not slow-mo)
       await Future.delayed(const Duration(milliseconds: 600));
 
       // Verify header
@@ -59,7 +57,9 @@ void main() {
       await $.pumpAndSettle();
       await Future.delayed(const Duration(milliseconds: 500));
 
-      await $('About').tap();
+      await $('About')
+          .scrollTo()
+          .tap(); // MODIFIED: was $('About').tap() - scroll into view first
       await $.pumpAndSettle();
       await Future.delayed(const Duration(milliseconds: 500));
 
