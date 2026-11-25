@@ -1,10 +1,7 @@
 name: Patrol iOS
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-  workflow_dispatch:
+  workflow_dispatch:   # MODIFIED: manual only (removed push and pull_request triggers)
 
 jobs:
   patrol-ios:
@@ -20,7 +17,6 @@ jobs:
           channel: stable
           cache: true
 
-      # ADDED: keep CocoaPods so Patrol's RunnerUITests target can link the patrol pod
       - run: flutter config --no-enable-swift-package-manager
 
       - run: flutter pub get
@@ -42,7 +38,7 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
 
       - name: Run Patrol test (with recording)
-        timeout-minutes: 25   # ADDED: a stuck step can no longer burn the whole job
+        timeout-minutes: 25
         run: |
           set -m
           mkdir -p test_videos
@@ -58,11 +54,10 @@ jobs:
           WATCHER=$!
 
           set +e
-          patrol test -t patrol_test/app_test.dart -d "$UDID" --verbose   # MODIFIED: added --verbose
+          patrol test -t patrol_test/app_test.dart -d "$UDID" --verbose
           PATROL_EXIT=$?
           set -e
 
-          # MODIFIED: stop the recorder with SIGINT (finalizes MP4), bounded wait, then end the watcher
           pkill -INT -f "recordVideo" || true
           for i in $(seq 1 20); do
             pgrep -f "recordVideo" > /dev/null || break
