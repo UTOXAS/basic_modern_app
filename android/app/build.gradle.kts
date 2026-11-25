@@ -8,7 +8,8 @@ plugins {
 android {
     namespace = "com.example.basic_modern_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // MODIFIED: was `flutter.ndkVersion`; Patrol requires NDK 27
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -28,6 +29,16 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // ADDED: Patrol instrumentation runner
+        testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
+        // ADDED: clear app data between tests
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
+    }
+
+    // ADDED: run each test in an isolated process via Android Test Orchestrator
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
     buildTypes {
@@ -37,6 +48,11 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+}
+
+// ADDED: orchestrator dependency
+dependencies {
+    androidTestUtil("androidx.test:orchestrator:1.5.1")
 }
 
 flutter {
